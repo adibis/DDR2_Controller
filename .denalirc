@@ -1,0 +1,592 @@
+
+# $DENALI/.denalirc:  System 'initialization' file for Memory Modeler.
+
+# The '.denalirc' file is used to control Memory Modeler behavior 
+# during batch and simulation runs. Up to four '.denalirc' files are 
+# consulted during a simulation run, listed below in increasing order 
+# of precedence.  For example, if you want to change 'just one' flag, 
+# create a ./.denalirc file in the working directory of your simulation
+# with that flag set how you want it.
+#
+# 1) '$DENALI/.denalirc'  - system defaults
+# 2) '~/.denalirc'        - user defaults
+# 3) './.denalirc'        - specific simulation defaults
+# 4) $DENALIRC            - ENV variable which can be set to a file to 
+#                           load simulation settings
+####### PureSpec for PCI Express Specific flags #################
+#
+
+#################################################################
+# PcieAutoExitHotReset 1
+#
+# If this flag is present and is 0, then ports which have entered 
+# HotReset due to receiving TS1s with the HotReset bit set (they 
+# were not directed by a higher layer) will wait for ttoHotReset 
+# before exiting the HotReset state. If this flag is not present, 
+# or if it is present and is set to 1, the ports that have not been 
+# directed to HotReset will exit HotReset when ElectricalIdle is 
+# detected on all RX lanes (indicating that the device at the other 
+# end has entered the Detect state.)
+
+#################################################################
+# PcieAutoExitDetectQuiet 1
+# PcieAutoExitDetectQuietInst 1
+#
+# If this flag exists in the .denalirc and is set to 0, then the model 
+# instance will not automatically exit Detect.Quiet, but will always 
+# wait for the ttoDetectQuiet timeout.  If this flag exists and is 
+# set to 1, the model instance will exit Detect.Quiet automatically 
+# after the ttxIdleMin has expired, without waiting for ttoDetectQuiet.
+# The default behavior (if the flag does not exist) is that the 
+# downstream port of the Root Complex model instance will exit 
+# Detect.Quiet automatically, and all upstream ports will wait for 
+# either ttoDetectQuiet or for electrical idle to be broken.
+
+# PciePhyScrambleData 1
+#
+# Enable(1) or Disable (0) Data Scrambling.	
+
+# PciePhyLogScrambledData 0
+#
+# In the debug RX/TX trace messages in the history file (if HistoryDebug 
+# is enabled) display the RX/TX data symbols in their scrambled form, 
+# as they actually appear on the link.	
+
+# PciePhyBypassTraining	COM/SKP
+#
+# When set, bypass the physical link training and initialize the model 
+# with the link in the L0 state.	
+# DEFAULT - none
+
+# PcieDllBypassInit 0
+#
+# When set to 1, the model will bypass the DL layer initialization.	
+
+# PcieHistoryPktSize 256
+# Specifies the maximum packet payload bytes in the history file. 
+# Only record up to this maximum number of bytes in history.	
+# Can take any positive integer value.
+
+# PcieUnknownPLValue 0	
+#
+# Converts Unknown (non-0/1) bit values in a payload to 0 (0), 
+# 1 (1), or random (2).	
+
+# AssertionCoverageFile	filename
+#
+# Setting this to a filename turns on the Assertion Coverage and 
+# outputs the Coverage Statistics at the end of simulation to this file.
+# If set to "off" or not included in the .denalirc file, 
+# the simulation will not use Assertion Coverage. 	
+
+# AssertionPassMessages 0
+#
+# Setting this to 1 will enable history messages to be displayed for each 
+# passed Assertion Check..This is ignored if AssertionCoverageFile is 
+# absent or set to off.	
+
+# AssertionPassCallbacks 0
+#
+# Setting this to 1, will enable callbacks to be generated for each 
+# passed Assertion. This is ignored if AssertionCoverageFile is 
+# absent or set to off.	
+
+# LogUncoveredAssertions 0
+#
+# Setting this to 1, will include all assertion types, not just those 
+# that pass and fail, in the assertion coverage log. This will also 
+# include a count of assertions not covered. 	
+
+# AssertionChecklistFile filename
+# 
+# Setting this to a filename outputs the coverage statistics to the
+# specified file, sorted by reference ID (e.g. PCISIG ID) instead of
+# by error ID. AssertionCoverageFile must also be included in the 
+# .denalirc file, and filename must be different than the filename 
+# specified for AssertionCoverageFile.
+
+# AssertionCoverageByTest 0
+#
+# When set to 1, the results for each puresuite test are output to
+# the Coverage and Checklist files, preceded by the test name. 
+# Ignored when not running puresuite.
+
+# AssertionCoverageSummary 1
+#
+# When set to 1, the cumulative assertion coverage statistics for the
+# entire simulation are output to the Coverage and Checklist files.
+# If AssertionCoverageByTest is also set to 1, the Coverage and 
+# Checklist files have the results for each test, followed by the
+# summary results.
+
+# PcieTransLogFile filename
+#
+# Setting this value to a filename will turn on the transaction log output.	
+
+# PcieTransLogTypes string
+#
+# Setting this value to tlp, dllp,. or os will limit the output 
+# to the transaction log to the given transaction types	
+
+# PcieTLBypassInit 0
+#
+# When set to 1, the model will bypass the TL layer (System) initialization.	
+
+# PcieTLAutoBaseInit 0
+#
+# Applies only when PcieTLBypassInit is set to 1. When set to 1, 
+
+
+####### Explanation of .denalirc switches you should know about ########
+
+# Use HistoryFile to create a history file containing all read and write 
+# operations to each memory.  Also, this file will record other memory
+# actions and commands.  By default, no history file is created.  
+# Setting it to "off" disables the history file generation.
+#
+# Use HistoryDebug to save extra debug information to the HistoryFile.  
+# Use HistoryDebugLoad to save each individual address load to file;
+# use of this switch will greatly increase the size of the HistoryFile.  
+# By default, both Debug options are Off.
+
+# HistoryFile      test.his
+#default setting below
+# HistoryDebug     Off
+# HistoryDebugLoad On
+
+# Use HistoryInSimLog set to 1 to see the history messages reflected in
+# wherever the output from the simulator is going (which varies by simulator)
+# This interleaves Denali history with testbench output.
+# The default for this is 0 (off). 
+# HistoryInSimLog  0
+
+# If TraceFile is specified, then a trace ('.trc') file is created which 
+# contains all of the events on memory ports, read and writes to the 
+# memories, etc.  By default, there is no trace file.
+# Setting it to "off" disables the trace file generation.
+#default value - None
+# TraceFile test.trc
+
+
+# Use 'TraceTimingChecks 1' to trace all of the timing checks performed
+# during simulation. 
+#default -  this option is  0 (off).
+
+# TraceTimingChecks 0
+
+
+# How many minutes to wait suspended, if a license is not available
+# LicenseQueueTimeout 120
+# How many seconds to wait before pingng for licenses (so that the license log file doesn't overflow)
+# LicenseQueueRetryDelay 60
+
+
+# Uncomment the following line to generate a simulation database at /tmp/simdbXXX
+# SimulationDatabase /tmp/simdbXXX
+#    where XXX is a unique number to avoid collisions with other users.
+# You can specify a different database location than above if desired.
+# However, for performance reasons it is strongly recommended to
+# locate the database on a local disk.
+# NOTE: You must turn on HistoryFile when generating a database.
+#       This will be corrected in a future release.
+# To turn off database generation (this is the default), use:
+# SimulationDatabase Off
+# To limit the database info to specified instances, use a statement like:
+# SimulationDatabasePattern instance2
+
+# Turn simdb buffering off if you want database flushed to disk immediately.
+# This results in a performance hit but is useful if you're debugging an, er
+# "abnormal termination" situation.
+# SimulationDatabaseBuffering on/off
+
+
+# Use 'TimingChecks 1' to turn on timing checks (default). 
+# Use 'TimingChecks 0' to turn off timing checks (setup, hold, etc).
+#default value is 1 (on). 
+
+# TimingChecks 1
+
+
+# Use 'RefreshChecks 1' to turn on refresh checking for DRAMs. 
+# Use 'RefreshChecks 0' to turn off refresh checking. 
+# If you don't have any DRAMs in your design, this check is ignored.
+
+# RefreshChecks 1
+
+#
+# If you'd like to count reads and writes as a refresh to that particular row,
+# set the following parameter RefreshOnReadWrite to 1
+#
+# Although the true behavior of the part may count a read and
+# write as a refresh to that row, Denali doesn't default to that
+# behavior because we feel a controller shouldn't rely on certain
+# memory accesses to obtain proper refresh rates.
+#  This is supported for edram, rldram, sdram, ddr sdram, and
+#  ddr II sdram memories.
+
+# RefreshOnReadWrite 0
+
+#
+# If you'd like to have the model check for bus contention on DQS during 
+# reads, set ReadDQSContentionCheck 1. Supported for ddr and ddr_II models only.
+
+#
+# DDR/DDR_II SDRAM models checks for bus contention on DQS during 
+# reads. To disable this check, set ReadDQSContentionCheck 0.
+
+# ReadDQSContentionCheck 0
+
+#
+# DDR and DDR2 SDRAM models check for twpst_max violations only if 
+# (a) the next command is not a write, or 
+# (b) there is more than one cycle between the end of the last data burst 
+#     and the start of the next one.  
+# To disable the twpst_max check for case (b), set TwpstMaxAtBusTurnaroundOnly 1.
+
+# TwpstMaxAtBusTurnaroundOnly 1
+
+#######################################################################
+# IBM-EDRAM Specific Check
+#
+# Use 'SuppressRefreshInfoMessages 1' to eliminate informational messages 
+# about the actual refresh window size (when it's not an error or warning)
+# The default is '0', or to report on every refresh cycle.  
+
+# SuppressRefreshInfoMessages 0 
+
+
+
+# By default, memory is initialized to 'X'. To change the default, you 
+# may specify:
+#   InitialMemoryValue 0  - for all '0's
+#   InitialMemoryValue 1  - for all '1's
+#   InitialMemoryValue X  - for all 'X's
+#   InitialMemoryValue U  - for all 'U's
+#
+# or, alternatively, a hex value to initialize all the words to. This value
+# must begin with "0x" and consist of the hex values 0-9 and A-F (or a-f)
+# an example is:  
+#   InitialMemoryValue  0x3018
+# This string cannot expand to be longer than the memory's word width 
+# (typically the data size).  If shorter, the unspecified bits will be filled
+# with 0s. 
+#   
+# Any other value will initialize memory to all 'X's
+#
+# You may also generate random data for the initial data by specifying:
+#
+#   InitialMemoryValue randomNoUpdate - the model is not updated with the 
+#             random data, it is not written to the model.   So subsequent
+#             reads without intervening writes will get new random data.
+#   InitialMemoryValue randomWithUpdate  - the model is updated with the
+#             random data, it is written to the model.  So subsequent reads
+#             without intervening writes will get the same random data that
+#             was returned the first time
+#
+# Alternatively, you can use any arbitrary C function to specify the initial
+# data, including random data, random data with parity, etc.   
+# See $DENALI/ddvapi/example/fillValue for examples. 
+
+# InitialMemoryValue X
+
+
+# By default, the system will report an informative message concerning
+# each memory component instantiated in your design.  
+# Use InitMessages Off to turn off these messages.
+#default value is on.
+
+# InitMessages Off
+
+
+# Trace based on instance name pattern, may use shell "glob" patterns
+# for example, *, ?, [].
+# default - All instances
+# TracePattern  instance2
+
+# Recording history for instances matching pattern
+#default - All instances
+# HistoryPattern instance2
+
+###################################
+# In models with random output delay scheduling, such as DDR SDRAM, DDR-II, 
+# FCRAM, RDRAM, and RLDRAM, output scheduling and some timing checks are 
+# affected by the actual clock cycle time. The clock cycle time is typically
+# measured by the model during the first few cycles of simulation only, 
+# unless one of the following flags is used.
+#
+# Running uneven clocks (non-constant clock width) or not. When this is set, 
+# the model measures the clock width every cycle and disables random output 
+# delay scheduling.
+# IrregularClock 0
+#
+# If there are only irregular clocks at the beginning of simulation,
+#   you can use the feature 
+# ClockStableCycles xxx 
+#   where xxx is the number of cycles in a row where we will consider clock
+#   stablilized.  
+#
+
+# In models with random output delay scheduling, which better exercises
+# the memory controller, you might want to turn it off early in your 
+# verification cycle.  This can be accomplished by setting RandomOutputDelay
+# to 0.  This has no effect if IrregularClock is 1.
+# RandomOutputDelay 1
+
+
+# By default, the memory model drives output with delay, if setting to 0,
+# then it drives output with zero delay, mainly used for cycle-based 
+# simulation.
+# OutputTiming 1
+
+# When RandomOutputDelay is 0 and IrregularClock is 0, the model does not do
+# random output scheduling, but it does take the clock high and low pulse
+# widths into account, so this mode can be used when the clock duty cycle is 
+# not 50%. The MinimumOutputDelay flag is used in this mode only. If 
+# MinimumOutputDelay is set to 1, the outputs are scheduled as early as 
+# possible; otherwise, the outputs are scheduled as late as possible.
+# Typical usage would be to do two runs, one with this flag set to 0 and one
+# with it set to 1.
+# Currently only implemented for DDR SDRAM.
+# MinimumOutputDelay 0
+
+###################################
+# RDRAM specific variables
+# suppress warning messages for certain situations
+# WarnSuppress 0
+# report error, not corrupt memory or drive X when there is timing error
+# TimingChecksReportOnly 0
+# when to start timing checks
+# TimingChecksStartTime 0ps
+# TimingChecksStartTime "20 us"
+# TimingChecksStartTime	"200ms"
+# TimingChecksStartTime	200000 ns
+
+###################################
+# save/restart, checkpoint enabling
+# Checkpoint 0
+
+###################################
+# suppress error and warning messages
+#default value is on.
+# ErrorMessages off
+
+###################################
+# when to start error and warning reporting
+# ErrorMessagesStartTime 0ps    -- default
+# ErrorMessagesStartTime "20 us"
+# ErrorMessagesStartTime "200ms"
+# ErrorMessagesStartTime 200000 ns
+
+###################################
+# ErrorCount variable.
+# In Verilog code, you can use an integer variable to see the number
+# of errors detected by the Denali memory models.  Declare an
+# integer variable in your testbench and then register it as the
+# error count variable through the ErrorCount switch in the .denalirc file.
+# Then our models will increment this variable each time an error detected.
+# You may monitor the error count variable, branch on it, etc. Sample usage:
+#
+# In testbench:
+#
+# module testbench;
+#   integer errCount;     // monitor, display this
+#
+# In .denalirc: uncomment the following line:
+# No default value.
+# ErrorCount testbench.errCount
+
+# This variable gives you the option of exiting simulation when Denali errors
+# occur.  If this is 0, it won't exit, a positive number means to exit when
+# that many errors have occurred.      
+# ExitOnErrorCount 0
+
+
+###################################
+# Variables to control initialization checking in various models.
+#
+# set to 0 to turn off the initialization checks.
+# InitChecks 0
+#
+# set to 0 for model to ignore tpause/tinit checks in DRAM models, DLL Lock
+# time checks in SSRAM models. 
+# InitChecksPauseTime 0
+
+########################################################
+# Tcl Interpreter enabling : needed to enable mmeval
+# TclInterp 0 
+
+###################################
+# RLDRAM specific variables
+#
+# set to 0 to turn off the 2K cycles check between each refresh
+# during init.
+# RldramInitCyclesCheck 0
+#
+# set to 0 to turn off refresh checking to each bank at init :
+# RldramInitRefreshChecks 0
+# 
+# By default do not check address stability during 3 Init MRS. 
+# It can be forced to check it by setting "InitMrsAddressStable 1" 
+# InitMrsAddressStable 0
+
+
+# Denali tries to be intelligent about interpreting high and low
+# bits of time for the MTI simulator.  This behavior is platform
+# and release dependent in MTI.  Denali's automatic behavior may
+# not be appropriate in all cases, so the following switches
+# give the user control over the automatic behavior of Denali.
+#
+# To override the automatic interpretation of high and low time bits
+# and turn off the toggling behavior use:
+#   ModelSimTimeDefinitionToggle off
+# To make toggling the default behavior (avoids certain messages), use:
+#   ModelSimTimeDefinitionToggle on
+
+
+#################################################################
+# If preloading memory with "init_file" or mmload before setting
+# breakpoints needs to be tracked as memory write access, then
+# set the following variable : (default is 0)
+#
+# TrackAccessFromInit 1
+#
+
+#################################################################
+# suppress messages for soft error injections.  By default, bits
+# injected are reported.
+# EiMessages off
+
+#################################################################
+# Suppress differential clock checking. By default, models check 
+# negative polarity clock signals for synchronization with 
+# positive polarity clock signals. 
+# 
+DifferentialClockChecks 0
+#
+# Specify allowable skew between positive and negative polarity
+# clock signals for differential clock checking. Skew is measured
+# from the time either one of the signals switches to the time
+# the opposite signal switches. By default, no skew is allowed.
+# Note that in an actual device, differential clock skew is
+# meaningliess since the clock edge is defined as the crossing
+# of the positive and negative clock signals. This parameter
+# accounts for the fact that rise and fall times are not 
+# modeled in simulation, and its value is not provided by vendors.
+# Skew is specified using a time value and units.
+# 
+# DifferentialClockSkew 150 ps
+
+#################################################################
+# DDR-II SDRAM specific variables
+# 
+# Set to 0 to disable OCD checking. When this variable is 0, the 
+# model does not issue warning messages or corrupt data when the 
+# OCD level is outside the valid range. Note that there's also a 
+# SOMA feature that enables OCD. If the SOMA feature is disabled, 
+# OCD is completely ignored by the model. 
+#
+# OffChipDriverImpedanceChecks 0
+# 
+#
+# MRS/EMRS informative messages are always put into the history and the 
+# simulation log/transcript. If you'd like to not see them in the simulation 
+# log set the following to 0
+# MRSmsgsInSimLog 1
+
+## DDR-II and DDR3
+# invalid ranges of model driven read data aren't padded X's
+# noXsInReadData 0 
+
+# invalid ranges of model driven read data padded with rand data not X
+# RandomInsteadOfXInReadData 0
+
+################################################################
+# ESSRAM specific variables
+#
+# SuppressPortContention InstNamePattern
+# Suppresses Read-Write Port contention error messages in instances
+# whose name matches the pattern specified by "InstNamePattern"
+#
+
+################################################################
+# REGFILE specific variables
+# SuppressUnknownAddrReadError  InstNamePattern  
+# Suppresses the error messages when an unknown address is 
+# read from the instance whose name matches "InstNamePattern".   
+
+#################################################################
+# Suppress messages for Assertions.  By default, a message is printed
+# when an assertion is triggered.
+#
+# AssertionMessages off
+
+#################################################################
+# Suppress trace for backdoor read/write. By default it is traced
+#
+# TraceBackdoorReadWrite 0
+
+#################################################################
+#    In the .denalirc file of the testcase ( or of the user home or
+#    where-ever it picks up from ), we should have the following switches :
+#
+#
+#    FsdbLogFile  <file-name-where-transactions-will-be-dumped>
+#
+#    Transactions ( ie packets transmitted from Transmit side or packets
+#    received by the Receive side of PCIE ) will get dumped into the above
+#    file specified. If this switch is not there, there won't be dump of
+#    transactions.
+#
+#
+#    HistoryPattern <instance-name> <instance-name-wildcards>
+#
+#    The above will dump out transactions of only those instances. The default is
+#    all instances ie if the switch is not specified, transactions of all the 
+#    instances will be dumped.
+
+#################################################################
+#    In the .denalirc file of the testcase ( or of the user home or
+#    where-ever it picks up from ), we should have the following switches :
+#
+#
+#    SimVisionLogFile  <file-name-where-transactions-will-be-dumped>
+#
+#    Transactions ( ie packets transmitted from Transmit side or packets
+#    received by the Receive side of PCIE ) will get dumped into the above
+#    file specified. If this switch is not there, there won't be dump of
+#    transactions.
+#
+#
+#    HistoryPattern <instance-name> <instance-name-wildcards>
+#
+#    The above will dump out transactions of only those instances. The default is
+#    all instances ie if the switch is not specified, transactions of all the 
+#    instances will be dumped.
+
+
+#
+# TraceBackdoorReadWrite 0
+
+##################################################################
+# EthernetUnknownPLValue 0	
+#
+# Setting this variable will force any unknown bit value in a payload to 
+# either 0, 1, or if set to 2 randomly picks 0 or 1. This .denalirc variable 
+# is not instance specific.
+
+##################################################################
+# MaxRdWrCallBackNestingDepth 10
+#
+# This variable limits the CallBack Recursive depth. Beyond which , an Info
+# message is issued and further calls in that nest are not serviced.
+# The user can set it to any number he wants.If not set,
+# by default, it is set to 10 internally. Min Depth being atleast 1.
+
+##################################################################
+# RdlXmlFile regspace.xml
+# 
+# Set this variable to the RDL XML file generated by Denali Blueprint 
+# to be used by Purespec-RDL.
+# Either set the path relative to your working directory where the 
+# simulation is run or absolute path, without quotes.
+ 
